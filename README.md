@@ -1,1 +1,1 @@
-# Divisors_Comparison
+This is my super ass Sage code to collect numerical evidence supporting the claim that randomly selecting coefficients of a low-deree finite field polynomial then computing its roots is equivalent to simply selecting roots at random.
