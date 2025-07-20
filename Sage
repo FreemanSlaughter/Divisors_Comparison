@@ -1,0 +1,131 @@
+import matplotlib.pyplot as plt 
+import numpy as np 
+from collections import Counter
+import scipy.stats 
+
+# Parameters
+p = 257  # Field size
+F = GF(p)  # Finite field
+c_1, c_2 = F(2), F(3)  # Elliptic curve coefficients 
+E = EllipticCurve(F, [c_1, c_2])  # Creates curve
+num_trials = 10000  # Number of trials
+
+
+# Checks for zero discriminant
+if mod(16*(4*c_1^3 + 27*c_2^2), p) == 0:
+    print("Singular curve!!!!!")
+
+
+# Polynomial ring for x
+R.<x> = PolynomialRing(F)
+
+# Initialize coefficient root list
+root_list = []
+
+for _ in range(num_trials):
+    # Random coefficients
+    a = F.random_element()
+    b = F.random_element()
+    
+    # Line using coefficients
+    line = x^2 + a*x + b
+    
+    # Calculates roots=
+    coef_roots = line.roots(multiplicities=False)
+    
+    # Append roots to list
+    root_list = root_list + coef_roots
+    
+
+
+# Determine number of roots in list
+num_roots = len(root_list)
+
+
+
+    
+# Initialize data vector
+data = []*num_roots
+
+# Convert list of roots into integers to plot
+for elt in root_list:
+    data.append(int(elt))
+
+
+
+    
+# Generate random roots
+rand_roots = [randint(1, p) for _ in range(num_roots)]
+
+
+
+# Create the histogram with coefficients in blue and roots in orange
+plt.hist(data) 
+plt.hist(rand_roots) 
+
+
+# Add labels and a title
+plt.xlabel("Value")  
+plt.ylabel("Frequency")  
+plt.title("Distribution of Coefficients and Roots") 
+
+# Display the histogram
+plt.show() 
+
+
+# Computed mean, STD, var
+mean_1 = float(numpy.mean(data))
+mean_2 = float(numpy.mean(rand_roots))
+std_1 = float(numpy.std(data))
+std_2 = float(numpy.std(rand_roots))
+# var_1 = float(numpy.var(data))
+# var_2 = float(numpy.var(rand_roots))
+
+# Prints the mean and STD
+# print("Rounded mean for coefficients is", '{:0.2f}'.format(mean_1), "and variance is", '{:0.2f}'.format(var_1), "mean for random roots", '{:0.2f}'.format(mean_2), "and variance", '{:0.2f}'.format(var_2))
+print("Mean for coefficients is", '{:0.2f}'.format(mean_1), "and STD is", '{:0.2f}'.format(std_1), "mean for random roots", '{:0.2f}'.format(mean_2), "and STD", '{:0.2f}'.format(std_2))
+print("Relative difference for the means is", '{:0.2f}'.format((mean_1 - mean_2)/mean_2), "and for STDs is", '{:0.3f}'.format((std_1 - std_2)/std_2))
+
+
+# Computes frequency analysis table
+frequency_data = Counter(data)
+frequency_rand = Counter(rand_roots)
+# print(frequency_data)
+# print(frequency_rand)
+
+
+
+# Print l_num to r_num of both lists, for inspection
+l_num = 0
+r_num = 10
+# print("The numbers look like", data[l_num:r_num], "and", rand_roots[l_num:r_num]) 
+
+
+
+
+# Run chi-squared test
+# stat, p = chisquare(f_obs=data, f_exp=rand_roots)
+
+# print(f"Chi-squared statistic: {stat}")
+# print(f"P-value: {p}")
+
+
+
+# Sample data (replace with your actual data)
+observed = np.array([data, rand_roots])
+
+# Perform the chi-squared test
+chi2, p_value, dof, expected = scipy.stats.chi2_contingency(observed)
+
+# Print the results of the test
+# print("Chi-squared statistic:", chi2)
+print("P-value:", p_value)
+# print("Degrees of freedom:", dof)
+# print("Expected frequencies:\n", expected)
+
+# Interpretation
+alpha = 0.05  
+if p_value < alpha:
+    print("Reject the null hypothesis: There is a significant association between the variables.")
+else:
+    print("Fail to reject the null hypothesis: There is no significant association between the variables.")
